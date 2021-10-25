@@ -1,9 +1,41 @@
 import { css } from '@emotion/react';
 import Layout from '../components/layout/Layout';
-import { Field, Form, InputSubmit } from '../components/ui/Form';
+import { Error, Field, Form, InputSubmit } from '../components/ui/Form';
+import { createAccountValidation } from '../helpers/createAccountValidation';
+import useValidation from '../hooks/useValidation';
+import firebase from '../firebase/firebase';
+import { useState } from 'react';
+import Router from 'next/router';
 
 
 export default function CreateAccount() {
+  
+  const [errorUser, setErrorUser] = useState('');
+
+  const initialState = {
+    nombre: '',
+    email: '',
+    password: ''
+  }
+
+   const createAccount = async () => {
+    try {
+    
+     await firebase.register( nombre, email, password );
+     Router.push('/');
+    
+    } catch (error) {
+      console.log(error);
+      setErrorUser(error.message);
+    }
+
+  }
+
+  
+  const { value, error, handleSubmit, handleChange, handleBlur } = useValidation(initialState, createAccountValidation, createAccount);
+
+  const { nombre, email, password } = value;
+
   return (
     <div >
       <Layout >
@@ -14,7 +46,7 @@ export default function CreateAccount() {
           `}
         >Crear Cuenta</h1>
         
-        <Form>
+        <Form onSubmit={ handleSubmit }>
           <Field>
             <label htmlFor="nombre">Nombre</label>
             <input 
@@ -22,8 +54,13 @@ export default function CreateAccount() {
                 id="nombre"
                 placeholder="Tu Nombre"
                 name="nombre"
+                value={ nombre }
+                onChange={handleChange}
+                onBlur={handleBlur}
             />
           </Field>
+
+          { error.nombre  && <Error> {error.nombre}</Error>}
 
           <Field>
             <label htmlFor="email">Email</label>
@@ -32,8 +69,15 @@ export default function CreateAccount() {
                 id="email"
                 placeholder="Tu Email"
                 name="email"
+                value={ email }
+                onChange={handleChange}
+                onBlur={handleBlur}
+
             />
           </Field>
+
+          { error.email  && <Error> {error.email}</Error>}
+
 
           <Field>
             <label htmlFor="password">Password</label>
@@ -42,8 +86,16 @@ export default function CreateAccount() {
                 id="password"
                 placeholder="Tu Password"
                 name="password"
+                value={ password }
+                onChange={handleChange}
+                onBlur={handleBlur}
+
             />
           </Field>
+
+          { error.password  && <Error> {error.password}</Error>}
+
+            { errorUser && <Error> {errorUser}</Error> }
           
           <InputSubmit 
               type="submit" 

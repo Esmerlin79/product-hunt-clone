@@ -16,7 +16,7 @@ const useValidation = ( initialState, validation, handleFunction ) => {
             
             setSubmitForm(false);
         }   
-    }, []);
+    }, [error]);
 
     const handleChange = (e) => {
         setValue({
@@ -32,12 +32,16 @@ const useValidation = ( initialState, validation, handleFunction ) => {
         setSubmitForm(true);
     }
 
+    const handleBlur = () => {
+        const validationErrors = validation(value);
+        setError(validationErrors);
+    }
     return {
         value,
         error,
-        submitForm,
         handleSubmit,
-        handleChange
+        handleChange,
+        handleBlur
     }
 }
  
