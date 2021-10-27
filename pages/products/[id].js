@@ -42,26 +42,34 @@ const Product = () => {
     const { query: { id } } = router;
 
     const { firebase, user } = useContext(FirebaseContext);
-    
+  
     useEffect(() => {
         
+        let isCancelled = false;
+
         if( id && consultDB ) {
+
             const getProduct = async () => {
                 const productQuery = await firebase.db.collection('productos').doc(id);
                 const resp = await productQuery.get();
 
-                if( resp.exists ) {
-                    setProduct(resp.data());
-                    setConsultDB(false);
-                } else {
-                    setError(true);
-                    setConsultDB(false);
+                if( !isCancelled ) {
+                    if( resp.exists ) {
+                        setProduct(resp.data());
+                        } else {
+                            setError(true);
+                        }
+                        setConsultDB(false);
+                    }
                 }
-            }
 
             getProduct();
         }
-    }, [id])
+
+        return () => {
+            isCancelled = true;
+        }
+    }, [id, product])
 
     if(Object.keys(product).length === 0 && !error) return <p>Cargando...</p>
     
@@ -78,12 +86,11 @@ const Product = () => {
         const votesUid = [...haVotado, user.uid];
 
         firebase.db.collection('productos').doc(id).update({ votos: newTotal, haVotado: votesUid });
-        
+                
         setProduct({
             ...product,
             votos: newTotal
         })
-
         setConsultDB(true);
     }
 

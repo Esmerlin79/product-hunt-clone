@@ -1,6 +1,7 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useState } from "react";
+import Router from 'next/router';
 
 const InputText = styled.input`
     border: 1px solid var(--gris3);
@@ -35,6 +36,11 @@ const Search = () => {
         e.preventDefault();
         
         if( search.trim() === '' ) return;
+
+        Router.push({
+            pathname: '/search-product',
+            query: { q: search }
+        })
     }
 
     return ( 
