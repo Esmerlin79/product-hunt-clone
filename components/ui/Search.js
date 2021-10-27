@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
+import { useState } from "react";
 
 const InputText = styled.input`
     border: 1px solid var(--gris3);
@@ -27,15 +28,26 @@ const InputSubmit = styled.button`
 `;
 
 const Search = () => {
+
+    const [search, setSearch] = useState('');
+
+    const handleSubmit = e => {
+        e.preventDefault();
+        
+        if( search.trim() === '' ) return;
+    }
+
     return ( 
         <form 
             css={css`
                 position: relative;
             `}
+            onSubmit={handleSubmit}
         >
             <InputText 
                 type="text"
                 placeholder="Buscar Productos"
+                onChange={e => setSearch(e.target.value)}
             />
 
             <InputSubmit>Buscar</InputSubmit>
